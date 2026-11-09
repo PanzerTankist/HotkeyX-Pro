@@ -1,0 +1,1370 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HotkeyX Pro</title>
+<link rel="icon" href="assets/hotkeyx.png" type="image/png">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #e5e9f0;
+  --bg: #15171b;
+  --panel: #1d2026;
+  --panel-hover: #292e36;
+  --line: #2c3139;
+  --muted: #929ba8;
+  --blue: #66c0f4;
+  --accent: #315875;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 19px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease,
+    border-color .16s ease, transform .16s ease;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Titlebar */
+
+.titlebar {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 14px;
+  background: #15171b;
+  border-bottom: 1px solid #252930;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.titlebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.titlebar-logo {
+  width: 24px;
+  height: 24px;
+  display: block;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.version {
+  padding: 3px 7px;
+  border: 0;
+  border-radius: 6px;
+  background: #252a31;
+  color: #aeb8c4;
+  font-size: 9px;
+  letter-spacing: .6px;
+}
+
+.window-controls {
+  height: 38px;
+  display: flex;
+  gap: 3px;
+  padding-right: 5px;
+  -webkit-app-region: no-drag;
+}
+
+.window-button {
+  width: 34px;
+  height: 30px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #aeb4bd;
+  display: grid;
+  place-items: center;
+}
+
+.window-button:hover {
+  background: #2c3139;
+  color: white;
+}
+
+.window-button.close:hover {
+  background: #c74747;
+  color: white;
+}
+
+.window-button svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Main layout */
+
+.app {
+  height: calc(100vh - 38px);
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.glass {
+  background: var(--panel);
+  border: 1px solid #292e35;
+  border-radius: var(--radius-lg);
+}
+
+.sidebar {
+  width: 205px;
+  flex-shrink: 0;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 3px 7px 29px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.brand-icon {
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  background: #293744;
+  color: var(--blue);
+}
+
+.brand span {
+  color: var(--blue);
+}
+
+.section-label {
+  padding: 0 11px;
+  margin-bottom: 10px;
+  font-size: 9px;
+  color: #7f8996;
+  letter-spacing: 1.2px;
+}
+
+.nav-item {
+  border: 1px solid transparent;
+  padding: 11px;
+  margin-bottom: 4px;
+  border-radius: 11px;
+  color: #b8c0ca;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease;
+}
+
+.nav-item:hover {
+  background: #282d34;
+  color: white;
+}
+
+.nav-item.active {
+  background: #293c4b;
+  border-color: transparent;
+  color: #e8f5ff;
+}
+
+.nav-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 15px 7px 4px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #70d6a0;
+}
+
+.sidebar-bottom strong {
+  font-size: 11px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sidebar-bottom small {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Main content */
+
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #414852 transparent;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -.5px;
+  margin: 0 0 5px;
+}
+
+p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Buttons */
+
+button.primary,
+button.secondary {
+  border: 1px solid transparent;
+  border-radius: 11px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+button.primary {
+  color: #f4f9fc;
+  background: #315875;
+}
+
+button.primary:hover {
+  background: #3d7193;
+  transform: translateY(-1px);
+}
+
+button.primary:active {
+  transform: translateY(0);
+}
+
+button.secondary {
+  color: #d1d8e0;
+  background: #292e36;
+}
+
+button.secondary:hover {
+  background: #363d47;
+}
+
+/* Hero */
+
+.hero {
+  min-height: 132px;
+  padding: 23px 25px;
+  margin-bottom: 17px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(115deg, #202b35, #20242b 70%);
+  border: 1px solid #2c3741;
+  border-radius: var(--radius-lg);
+}
+
+.eyebrow {
+  font-size: 9px;
+  color: #80bde0;
+  letter-spacing: 1.4px;
+  margin-bottom: 9px;
+}
+
+.hero h2 {
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -.5px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+
+.hero p {
+  max-width: 430px;
+}
+
+.hero-orb {
+  display: none;
+}
+
+/* Application catalog */
+
+.catalog-panel {
+  padding: 17px;
+  margin-bottom: 19px;
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  border: 1px solid #292e35;
+}
+
+.catalog-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.catalog-top h2,
+.apps-header h2 {
+  font-size: 15px;
+  font-weight: 650;
+  margin: 0 0 5px;
+}
+
+.catalog-search {
+  margin-bottom: 13px;
+}
+
+input {
+  width: 100%;
+  padding: 11px 13px;
+  color: #e5e9f0;
+  background: #171a20;
+  border: 1px solid #303640;
+  border-radius: 11px;
+  outline: none;
+  transition: border-color .16s ease, background .16s ease;
+}
+
+input::placeholder {
+  color: #777f8a;
+}
+
+input:focus {
+  border-color: #5687a7;
+  background: #191e25;
+}
+
+.catalog-count {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 270px;
+  overflow-y: auto;
+  padding-right: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: #41464f transparent;
+}
+
+.catalog-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #20242a;
+  border: 1px solid transparent;
+  transition: background .16s ease;
+}
+
+.catalog-item:hover {
+  background: #292f37;
+}
+
+.app-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: 18px;
+  color: #9cc8e3;
+  background: #293541;
+  border: 0;
+}
+
+.app-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-name {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-path {
+  color: #8c96a3;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-empty {
+  padding: 22px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Saved shortcuts */
+
+.apps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 11px;
+}
+
+.apps-header h2 {
+  margin: 0;
+}
+
+.app-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px 16px;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 13px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  color: var(--blue);
+  background: #293541;
+  border: 0;
+}
+
+.empty h2 {
+  font-size: 15px;
+  font-weight: 650;
+  margin: 0 0 8px;
+}
+
+.empty p {
+  margin-bottom: 17px;
+}
+
+.app-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #1d2127;
+  border: 1px solid #292e35;
+  transition: background .16s ease, border-color .16s ease;
+}
+
+.app-card:hover {
+  background: #242a32;
+  border-color: #343d48;
+}
+
+.app-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.keycap {
+  padding: 8px 10px;
+  border: 1px solid #353d47;
+  border-radius: 9px;
+  background: #171a20;
+  color: #c9dce8;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: #292e36;
+  color: #a5b5c3;
+}
+
+.badge.active {
+  color: #8ed7a8;
+  background: #23372c;
+}
+
+.badge.conflict {
+  color: #ffb5a0;
+  background: #3c2927;
+}
+
+.delete-button {
+  width: 31px;
+  height: 31px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #929ba8;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.delete-button:hover {
+  color: white;
+  background: #a63d42;
+}
+
+.footer-note {
+  margin-top: 14px;
+  text-align: center;
+  color: #858c96;
+  font-size: 11px;
+  padding-bottom: 8px;
+}
+
+/* Add shortcut dialog */
+
+.dialog {
+  width: min(470px, calc(100vw - 32px));
+  padding: 23px;
+  color: #e5e9f0;
+  background: #20242b;
+  border: 1px solid #363d47;
+  border-radius: 20px;
+  box-shadow: 0 22px 70px #0009;
+}
+
+.dialog::backdrop {
+  background: #080a0dcc;
+  backdrop-filter: blur(5px);
+}
+
+.dialog-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.dialog-top h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.icon-button {
+  width: 33px;
+  height: 33px;
+  border-radius: 10px;
+  border: 0;
+  background: #2a3038;
+  color: #bfc5cd;
+}
+
+.icon-button:hover {
+  background: #a63d42;
+  color: white;
+}
+
+label {
+  display: block;
+  margin: 17px 0 8px;
+  color: #c4cbd4;
+  font-size: 12px;
+}
+
+.file-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #303640;
+  border-radius: 12px;
+  background: #171a20;
+}
+
+.file-picker span {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #a9bdcc;
+}
+
+.capture {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #354c5e;
+  border-radius: 12px;
+  background: #252e37;
+  text-align: center;
+}
+
+.capture:hover,
+.capture.recording {
+  background: #2b4050;
+  border-color: var(--blue);
+}
+
+.hint {
+  font-size: 10px;
+  margin-top: 8px;
+}
+
+.error {
+  color: #ff9c9c;
+  font-size: 11px;
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 185px;
+  }
+
+  .hero-orb {
+    display: none;
+  }
+
+  .app-card {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 650px) {
+  .app {
+    padding: 7px;
+    gap: 7px;
+  }
+
+  .sidebar {
+    width: 58px;
+    padding: 10px 5px;
+    border-radius: 15px;
+  }
+
+  .brand {
+    justify-content: center;
+    margin: 4px 0 28px;
+  }
+
+  .brand-text,
+  .section-label {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    font-size: 0;
+    padding: 12px 5px;
+    border-radius: 11px;
+  }
+
+  .nav-icon {
+    font-size: 18px;
+  }
+
+  .sidebar-bottom {
+    display: none;
+  }
+
+  main {
+    padding: 8px 2px;
+  }
+
+  h1 {
+    font-size: 21px;
+  }
+
+  .hero {
+    padding: 17px;
+    border-radius: 16px;
+  }
+
+  .hero h2 {
+    font-size: 21px;
+  }
+
+  .app-actions {
+    flex-wrap: wrap;
+  }
+
+  .catalog-panel {
+    padding: 11px;
+    border-radius: 16px;
+  }
+
+  .app-card {
+    border-radius: 13px;
+  }
+}
+</style>
+</head>
+
+<body>
+<header class="titlebar">
+  <div class="titlebar-brand">
+    <img class="titlebar-logo" src="assets/hotkeyx.png" alt="HotkeyX Pro">
+    <span>HotkeyX Pro</span>
+    <span class="version">BETA</span>
+  </div>
+
+  <div class="window-controls">
+    <button class="window-button" id="minimizeBtn"
+      title="Minimize" aria-label="Minimize">
+      <svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg>
+    </button>
+
+    <button class="window-button" id="maximizeBtn"
+      title="Maximize" aria-label="Maximize">
+      <svg id="maximizeIcon" viewBox="0 0 12 12">
+        <rect x="2.5" y="2.5" width="7" height="7" rx=".5"/>
+      </svg>
+    </button>
+
+    <button class="window-button close" id="closeBtn"
+      title="Close" aria-label="Close">
+      <svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3L3 9"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar glass">
+    <div class="brand">
+      <div class="brand-icon">⌘</div>
+      <div class="brand-text"><span>HotkeyX</span> Pro</div>
+    </div>
+
+    <div class="section-label">WORKSPACE</div>
+
+    <div class="nav-item active" id="myShortcutsNav">
+      <span class="nav-icon">▦</span>
+      My Shortcuts
+    </div>
+
+    <div class="nav-item" id="addNav">
+      <span class="nav-icon">＋</span>
+      Add Application
+    </div>
+
+    <div class="nav-item" id="catalogNav">
+      <span class="nav-icon">▤</span>
+      Application Catalog
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="status-dot"></div>
+      <div>
+        <strong>Local Mode</strong>
+        <small>Settings are stored on this device</small>
+      </div>
+    </div>
+  </aside>
+
+  <main id="mainContent">
+    <header class="topbar">
+      <div>
+        <h1>My Shortcuts</h1>
+        <p>Your applications, one keystroke away.</p>
+      </div>
+      <button class="primary" id="addButton">＋ Add Application</button>
+    </header>
+
+    <section class="hero glass">
+      <div>
+        <div class="eyebrow">QUICK ACCESS</div>
+        <h2>Fewer clicks.<br>More possibilities.</h2>
+        <p>Assign shortcuts to your favorite applications and launch them from any window.</p>
+      </div>
+      <div class="hero-orb">⌘</div>
+    </section>
+
+    <section class="catalog-panel" id="catalogSection">
+      <div class="catalog-top">
+        <div>
+          <h2>Application Library</h2>
+          <p>Find an application and assign a keyboard shortcut.</p>
+        </div>
+        <button class="secondary" id="refreshCatalog">Refresh</button>
+      </div>
+
+      <input id="catalogSearch" class="catalog-search"
+        placeholder="Search applications..."
+        aria-label="Search applications" autocomplete="off">
+
+      <div class="catalog-count" id="catalogCount">Loading catalog...</div>
+      <div class="catalog-list" id="catalogList"></div>
+    </section>
+
+    <section id="shortcutsSection">
+      <div class="apps-header">
+        <h2>Your Applications</h2>
+        <p id="count">0 applications</p>
+      </div>
+
+      <div id="appList" class="app-list"></div>
+
+      <div id="emptyState" class="glass empty">
+        <div class="empty-icon">⌘</div>
+        <h2>Nothing here yet</h2>
+        <p>Add your first application and assign a keyboard shortcut.</p>
+        <button class="primary" id="emptyAddButton">Add Application</button>
+      </div>
+    </section>
+
+    <p class="footer-note" id="notice" role="status">Ready to configure</p>
+  </main>
+</div>
+
+<dialog id="addDialog" class="dialog">
+  <form id="addForm">
+    <div class="dialog-top">
+      <div>
+        <div class="eyebrow">NEW SHORTCUT</div>
+        <h2>Add Application</h2>
+      </div>
+      <button type="button" class="icon-button" id="closeDialog"
+        aria-label="Close dialog">✕</button>
+    </div>
+
+    <label>Executable File</label>
+    <div class="file-picker">
+      <span id="selectedName">No file selected</span>
+      <button type="button" class="secondary" id="chooseFile">Browse...</button>
+    </div>
+
+    <label for="shortcutName">Application Name</label>
+    <input id="shortcutName" maxlength="120"
+      placeholder="e.g. Discord" autocomplete="off" required>
+
+    <label>Global Keyboard Shortcut</label>
+    <button type="button" class="capture" id="shortcutKey">
+      Press a key combination...
+    </button>
+
+    <p class="hint">Use Ctrl, Alt, Shift, or Win/Super together with another key.</p>
+    <p class="error" id="formError" role="alert"></p>
+
+    <div class="dialog-actions">
+      <button type="button" class="secondary" id="cancelDialog">Cancel</button>
+      <button type="submit" class="primary">Save Shortcut</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let items = [];
+let catalogItems = [];
+let selectedPath = "";
+let selectedArgs = [];
+let accelerator = "";
+let recording = false;
+
+/* Window controls */
+
+$("minimizeBtn").onclick = () => window.hotkeyAPI.minimize();
+$("maximizeBtn").onclick = () => window.hotkeyAPI.toggleMaximize();
+$("closeBtn").onclick = () => window.hotkeyAPI.close();
+
+window.hotkeyAPI.onMaximizeChange(maximized => {
+  $("maximizeIcon").innerHTML = maximized
+    ? '<path d="M4 2.5H9.5V8"/><path d="M8 4H2.5V9.5H8V4Z"/>'
+    : '<rect x="2.5" y="2.5" width="7" height="7" rx=".5"/>';
+});
+
+/* Shortcut formatting */
+
+function displayKey(value) {
+  return String(value || "")
+    .replaceAll("Super", "Win")
+    .replaceAll("Control", "Ctrl")
+    .replaceAll("ArrowUp", "↑")
+    .replaceAll("ArrowDown", "↓")
+    .replaceAll("ArrowLeft", "←")
+    .replaceAll("ArrowRight", "→")
+    .replaceAll("+", " + ");
+}
+
+function pluralApps(n) {
+  return `${n} application${n === 1 ? "" : "s"}`;
+}
+
+/* Render saved shortcuts */
+
+function render() {
+  $("count").textContent = pluralApps(items.length);
+  $("emptyState").hidden = items.length > 0;
+  $("appList").innerHTML = "";
+
+  for (const [index, item] of items.entries()) {
+    const card = document.createElement("article");
+    card.className = "app-card";
+
+    const icon = document.createElement("div");
+    icon.className = "app-icon";
+    icon.textContent = "⌘";
+
+    const info = document.createElement("div");
+    info.className = "app-info";
+
+    const name = document.createElement("div");
+    name.className = "app-name";
+    name.textContent = item.name;
+
+    const filePath = document.createElement("div");
+    filePath.className = "app-path";
+    filePath.textContent = item.path;
+    filePath.title = item.path;
+
+    info.append(name, filePath);
+
+    const actions = document.createElement("div");
+    actions.className = "app-actions";
+
+    const key = document.createElement("div");
+    key.className = "keycap";
+    key.textContent = displayKey(item.accelerator);
+
+    const status = document.createElement("span");
+    status.className = "badge " +
+      (item.status === "active" ? "active" :
+       item.status === "conflict" ? "conflict" : "");
+
+    status.textContent = item.status === "active" ? "Active" :
+      item.status === "conflict" ? "Conflict" : "Unavailable";
+
+    const remove = document.createElement("button");
+    remove.className = "delete-button";
+    remove.textContent = "×";
+    remove.title = "Remove shortcut";
+    remove.setAttribute("aria-label", "Remove " + item.name);
+
+    remove.onclick = async () => {
+      await persist(items.filter((_, i) => i !== index));
+    };
+
+    actions.append(key, status, remove);
+    card.append(icon, info, actions);
+    $("appList").append(card);
+  }
+}
+
+/* Save settings */
+
+async function persist(nextItems) {
+  try {
+    const result = await window.hotkeyAPI.saveShortcuts(nextItems);
+
+    if (!result.ok) {
+      $("notice").textContent = result.error || "Failed to save settings";
+      return false;
+    }
+
+    items = result.items;
+    render();
+
+    const conflicts = items.filter(item => item.status === "conflict").length;
+
+    $("notice").textContent = conflicts
+      ? `Saved. Shortcut conflicts: ${conflicts}`
+      : "Settings saved";
+
+    return true;
+  } catch (error) {
+    $("notice").textContent = error.message || "Failed to save settings";
+    return false;
+  }
+}
+
+/* Add shortcut dialog */
+
+function openDialog(program = null) {
+  selectedPath = program?.path || "";
+  selectedArgs = Array.isArray(program?.args) ? program.args : [];
+  accelerator = "";
+  recording = false;
+
+  $("selectedName").textContent = selectedPath || "No file selected";
+  $("shortcutName").value = program?.name || "";
+  $("shortcutKey").textContent = "Press a key combination...";
+  $("shortcutKey").classList.remove("recording");
+  $("formError").textContent = "";
+
+  $("addDialog").showModal();
+}
+
+$("addButton").onclick = () => openDialog();
+$("emptyAddButton").onclick = () => openDialog();
+$("addNav").onclick = () => openDialog();
+
+$("closeDialog").onclick = () => $("addDialog").close();
+$("cancelDialog").onclick = () => $("addDialog").close();
+
+/* Select executable */
+
+$("chooseFile").onclick = async () => {
+  try {
+    const file = await window.hotkeyAPI.pickProgram();
+    if (!file) return;
+
+    selectedPath = file.path;
+    selectedArgs = file.args || [];
+
+    $("selectedName").textContent = file.path;
+    $("shortcutName").value = file.name;
+  } catch (error) {
+    $("formError").textContent = error.message || "Failed to select a file";
+  }
+};
+
+/* Record keyboard shortcut */
+
+$("shortcutKey").onclick = () => {
+  recording = true;
+  accelerator = "";
+
+  $("shortcutKey").textContent = "Waiting for key combination...";
+  $("shortcutKey").classList.add("recording");
+  $("formError").textContent = "";
+};
+
+function keyName(event) {
+  const map = {
+    " ": "Space",
+    ArrowUp: "Up",
+    ArrowDown: "Down",
+    ArrowLeft: "Left",
+    ArrowRight: "Right",
+    Escape: "Esc",
+    Backspace: "Backspace",
+    Delete: "Delete",
+    Enter: "Enter",
+    Tab: "Tab"
+  };
+
+  if (map[event.key]) return map[event.key];
+
+  if (/^F([1-9]|1[0-9]|2[0-4])$/.test(event.key)) {
+    return event.key;
+  }
+
+  if (/^[a-z]$/i.test(event.key)) {
+    return event.key.toUpperCase();
+  }
+
+  if (/^[0-9]$/.test(event.key)) {
+    return event.key;
+  }
+
+  return null;
+}
+
+document.addEventListener("keydown", event => {
+  if (!recording) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (event.key === "Escape") {
+    recording = false;
+    $("shortcutKey").classList.remove("recording");
+
+    $("shortcutKey").textContent = accelerator
+      ? displayKey(accelerator)
+      : "Press a key combination...";
+
+    return;
+  }
+
+  if (["Control", "Alt", "Shift", "Meta"].includes(event.key)) {
+    return;
+  }
+
+  const key = keyName(event);
+
+  if (!key) {
+    $("formError").textContent = "This key is not supported.";
+    return;
+  }
+
+  const modifiers = [];
+
+  if (event.ctrlKey) modifiers.push("Control");
+  if (event.altKey) modifiers.push("Alt");
+  if (event.shiftKey) modifiers.push("Shift");
+  if (event.metaKey) modifiers.push("Super");
+
+  if (!modifiers.length) {
+    $("formError").textContent =
+      "Add Ctrl, Alt, Shift, or Win/Super to the key combination.";
+    return;
+  }
+
+  accelerator = [...modifiers, key].join("+");
+  recording = false;
+
+  $("shortcutKey").classList.remove("recording");
+  $("shortcutKey").textContent = displayKey(accelerator);
+  $("formError").textContent = "";
+}, true);
+
+/* Validate and save a new shortcut */
+
+$("addForm").onsubmit = async event => {
+  event.preventDefault();
+  $("formError").textContent = "";
+
+  const name = $("shortcutName").value.trim();
+
+  if (!selectedPath) {
+    $("formError").textContent = "Please select an application first.";
+    return;
+  }
+
+  if (!name) {
+    $("formError").textContent = "Please enter an application name.";
+    return;
+  }
+
+  if (!accelerator) {
+    $("formError").textContent = "Please assign a keyboard shortcut first.";
+    return;
+  }
+
+  if (items.some(item => item.accelerator === accelerator)) {
+    $("formError").textContent =
+      "This keyboard shortcut is already in use in the application.";
+    return;
+  }
+
+  const next = [...items, {
+    name,
+    path: selectedPath,
+    args: selectedArgs,
+    accelerator
+  }];
+
+  if (await persist(next)) {
+    $("addDialog").close();
+  }
+};
+
+/* Application catalog */
+
+function renderCatalog() {
+  const query = $("catalogSearch").value.trim().toLowerCase();
+
+  const filtered = catalogItems.filter(item =>
+    item.name.toLowerCase().includes(query) ||
+    item.path.toLowerCase().includes(query)
+  );
+
+  $("catalogCount").textContent =
+    `${filtered.length} of ${catalogItems.length} applications`;
+
+  $("catalogList").innerHTML = "";
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "catalog-empty";
+
+    empty.textContent = catalogItems.length
+      ? "No results found. Try another search."
+      : "No applications found in the standard folders.";
+
+    $("catalogList").append(empty);
+    return;
+  }
+
+  for (const program of filtered.slice(0, 300)) {
+    const row = document.createElement("div");
+    row.className = "catalog-item";
+
+    const icon = document.createElement("div");
+    icon.className = "app-icon";
+    icon.textContent = "▣";
+
+    const info = document.createElement("div");
+    info.className = "app-info";
+
+    const name = document.createElement("div");
+    name.className = "app-name";
+    name.textContent = program.name;
+
+    const file = document.createElement("div");
+    file.className = "app-path";
+    file.textContent = program.path;
+    file.title = program.path;
+
+    info.append(name, file);
+
+    const add = document.createElement("button");
+    add.className = "primary";
+    add.textContent = "Add";
+
+    add.onclick = () => openDialog(program);
+
+    row.append(icon, info, add);
+    $("catalogList").append(row);
+  }
+}
+
+async function loadCatalog() {
+  $("catalogCount").textContent = "Scanning application folders...";
+  $("catalogList").innerHTML = "";
+
+  try {
+    catalogItems = await window.hotkeyAPI.getProgramCatalog();
+    renderCatalog();
+  } catch (error) {
+    $("catalogCount").textContent = "Failed to load the catalog";
+    $("notice").textContent = error.message || "Catalog error";
+  }
+}
+
+$("catalogSearch").addEventListener("input", renderCatalog);
+$("refreshCatalog").addEventListener("click", loadCatalog);
+
+/* Sidebar navigation */
+
+$("catalogNav").onclick = () => {
+  $("catalogSection").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+};
+
+$("myShortcutsNav").onclick = () => {
+  $("shortcutsSection").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+};
+
+/* Main-process events */
+
+window.hotkeyAPI.onShortcutsUpdated(updated => {
+  items = updated;
+  render();
+});
+
+window.hotkeyAPI.onLaunchError(error => {
+  $("notice").textContent =
+    error.message || "Failed to launch application";
+});
+
+/* Initial loading */
+
+window.hotkeyAPI.getShortcuts()
+  .then(saved => {
+    items = saved;
+    render();
+  })
+  .catch(error => {
+    $("notice").textContent =
+      error.message || "Failed to load settings";
+  });
+
+loadCatalog();
+</script>
+</body>
+</html>

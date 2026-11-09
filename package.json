@@ -1,0 +1,32 @@
+{
+  "name": "hotkeyx-pro",
+  "productName": "HotkeyX Pro",
+  "version": "1.0.0",
+  "description": "HotkeyX Pro - Launch applications instantly with custom keyboard shortcuts.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "keywords": [
+    "hotkeys",
+    "keyboard-shortcuts",
+    "electron",
+    "productivity"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.hotkeyx.pro",
+    "productName": "HotkeyX Pro",
+    "win": {
+      "icon": "assets/hotkeyx-256.png",
+      "target": "nsis"
+    }
+  }
+}
